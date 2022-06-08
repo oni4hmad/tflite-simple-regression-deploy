@@ -49,4 +49,7 @@ dependencies {
 
     /* tensorflow */
     implementation 'org.tensorflow:tensorflow-lite:+'
+
+    /* GSON */
+    implementation 'com.google.code.gson:gson:2.8.9'
 }

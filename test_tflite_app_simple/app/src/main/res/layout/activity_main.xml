@@ -10,20 +10,20 @@
         android:id="@+id/edt_input"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="109dp"
         android:layout_marginTop="277dp"
         android:ems="10"
         android:hint="Enter Input Value (x)"
         android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/tv_hw"
+        android:id="@+id/tv_output"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="160dp"
         android:layout_marginTop="156dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -31,9 +31,9 @@
         android:id="@+id/btn_predict"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="160dp"
         android:layout_marginTop="400dp"
         android:text="Predict"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
