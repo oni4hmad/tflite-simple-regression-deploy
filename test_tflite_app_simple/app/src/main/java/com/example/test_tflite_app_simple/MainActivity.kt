@@ -62,12 +62,23 @@ class MainActivity : AppCompatActivity() {
         binding.btnResetSession.setOnClickListener {
             respondCount = 0
             binding.tvCount.text = respondCount.toString()
-            binding.tvOutput.text = ""
+            binding.tvOutput.text = "(bot respond)"
+            binding.tvInput.text = "(input options)"
             mChatbot.resetSession()
             setToEnded(false)
+            setToOption(false)
         }
         binding.btnChooseOption.setOnClickListener {
             dialog?.show()
+        }
+
+        /* debug purpose */
+
+        binding.switchAllowLoop.setOnCheckedChangeListener { compoundButton, checked ->
+            mChatbot.allowLoop = checked
+        }
+        binding.switchMakeEndLast.setOnCheckedChangeListener { compoundButton, checked ->
+            mChatbot.makeEndedRespondLast = checked
         }
     }
 

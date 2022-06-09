@@ -18,7 +18,9 @@ class Chatbot (private val context: Context) {
 
     private lateinit var tflite: Interpreter
 
-    private var isBotSessionEnded = false
+    /* debug purpose */
+    var makeEndedRespondLast = true
+    var allowLoop = false
 
     private val modelFIleName = "iswara_model.tflite"
     private val intentsFileName = "intents.json"
@@ -31,6 +33,8 @@ class Chatbot (private val context: Context) {
 
     private var classesList: ArrayList<String>? = null
     private var wordsList: ArrayList<String>? = null
+
+    private var isBotSessionEnded = false
 
     private var onChatbotResponded: ((String, Input, InputFormat) -> Unit)? = null
 
@@ -74,45 +78,64 @@ class Chatbot (private val context: Context) {
         Log.d("predictionMap", predictionMap.toString())
 
         if (!isBotSessionEnded) predictionMap?.entries?.also { entries ->
-            for (classPrediction in entries) {
-                val isRemainingClassesEmpty = remainingIntentClasses.isEmpty()
-                val isExistInRemainingClasses = isExistInList(classPrediction.key, remainingIntentClasses)
-                val isThisEntryEndedClass = isExistInList(classPrediction.key, endIntentClasses)
+            if (!allowLoop) {
+                for (classPrediction in entries) {
+                    val isRemainingClassesEmpty = remainingIntentClasses.isEmpty()
+                    val isExistInRemainingClasses = isExistInList(classPrediction.key, remainingIntentClasses)
+                    val isThisEntryEndedClass = isExistInList(classPrediction.key, endIntentClasses)
 
-                if (isExistInRemainingClasses && !isThisEntryEndedClass) {
+                    if (isExistInRemainingClasses && !isThisEntryEndedClass || !makeEndedRespondLast) {
 
-                    showToast("tag: ${classPrediction.key}")
+                        showToast("tag: ${classPrediction.key}")
 
-                    remainingIntentClasses.remove(classPrediction.key)
+                        remainingIntentClasses.remove(classPrediction.key)
 
-                    val botResponse = getBotResponseRandomize(classPrediction.key)
-                    val userInput = getUserInput(classPrediction.key)
+                        val botResponse = getBotResponseRandomize(classPrediction.key)
+                        val userInput = getUserInput(classPrediction.key)
 
-                    if (!botResponse.isNullOrEmpty() && userInput != null) {
-                        val inputType = Input.fromInt(userInput.type)
-                        onChatbotResponded?.invoke(botResponse, inputType, userInput)
-                        Log.d("predictionMap 2 input", "${inputType}, $userInput")
+                        if (!botResponse.isNullOrEmpty() && userInput != null) {
+                            val inputType = Input.fromInt(userInput.type)
+                            onChatbotResponded?.invoke(botResponse, inputType, userInput)
+                            Log.d("predictionMap 2 input", "${inputType}, $userInput")
+                        }
+
+                        Log.d("predictionMap 1 top", "key=${classPrediction.key}, value=${classPrediction.value}")
+                        break
+                    } else if (isRemainingClassesEmpty && isThisEntryEndedClass) {
+
+                        showToast("tag: ${classPrediction.key}")
+
+                        val botResponse = getBotResponseRandomize(classPrediction.key)
+                        val userInput = getUserInput(classPrediction.key)
+
+                        if (!botResponse.isNullOrEmpty() && userInput != null) {
+                            val inputType = Input.fromInt(userInput.type)
+                            onChatbotResponded?.invoke(botResponse, inputType, userInput)
+                            Log.d("predictionMap 2 input", "${inputType}, $userInput")
+                        }
+
+                        isBotSessionEnded = true
+
+                        Log.d("predictionMap 2 top", "key=${classPrediction.key}, value=${classPrediction.value}")
+                        break
                     }
+                }
+            } else {
+                for (classPrediction in entries) {
+                    val isThisEntryEndedClass = isExistInList(classPrediction.key, endIntentClasses)
 
-                    Log.d("predictionMap 1 top", "key=${classPrediction.key}, value=${classPrediction.value}")
-                    break
-                } else if (isRemainingClassesEmpty && isThisEntryEndedClass) {
+                    if (!isThisEntryEndedClass || !makeEndedRespondLast) {
+                        val botResponse = getBotResponseRandomize(classPrediction.key)
+                        val userInput = getUserInput(classPrediction.key)
 
-                    showToast("tag: ${classPrediction.key}")
-
-                    val botResponse = getBotResponseRandomize(classPrediction.key)
-                    val userInput = getUserInput(classPrediction.key)
-
-                    if (!botResponse.isNullOrEmpty() && userInput != null) {
-                        val inputType = Input.fromInt(userInput.type)
-                        onChatbotResponded?.invoke(botResponse, inputType, userInput)
-                        Log.d("predictionMap 2 input", "${inputType}, $userInput")
+                        if (!botResponse.isNullOrEmpty() && userInput != null) {
+                            val inputType = Input.fromInt(userInput.type)
+                            onChatbotResponded?.invoke(botResponse, inputType, userInput)
+                            Log.d("predictionMap 3 input", "${inputType}, $userInput")
+                        }
+                        Log.d("predictionMap 3 top", "key=${classPrediction.key}, value=${classPrediction.value}")
+                        break
                     }
-
-                    isBotSessionEnded = true
-
-                    Log.d("predictionMap 2 top", "key=${classPrediction.key}, value=${classPrediction.value}")
-                    break
                 }
             }
         }
