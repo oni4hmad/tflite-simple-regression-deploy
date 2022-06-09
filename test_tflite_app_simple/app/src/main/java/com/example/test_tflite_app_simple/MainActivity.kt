@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         binding.btnResetSession.setOnClickListener {
             binding.tvOutput.text = ""
             mChatbot.resetSession()
-            binding.btnPredict.visibility = View.VISIBLE
+            setToEnded(false)
         }
         binding.btnChooseOption.setOnClickListener {
             dialog?.show()
@@ -82,7 +82,7 @@ class MainActivity : AppCompatActivity() {
 
         when(input) {
             Chatbot.Input.ENDED -> {
-                binding.btnPredict.visibility = View.GONE
+                setToEnded(true)
                 setToOption(false)
             }
             Chatbot.Input.CHAT -> {
@@ -181,6 +181,16 @@ class MainActivity : AppCompatActivity() {
                 setToOption(true, inputFormat.title.toString())
 
             }
+        }
+    }
+
+    private fun setToEnded(isEnd: Boolean) {
+        if(isEnd) {
+            binding.edtInput.visibility = View.GONE
+            binding.btnPredict.visibility = View.GONE
+        } else {
+            binding.edtInput.visibility = View.VISIBLE
+            binding.btnPredict.visibility = View.VISIBLE
         }
     }
 
