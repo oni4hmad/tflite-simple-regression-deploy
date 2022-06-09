@@ -60,6 +60,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
         binding.btnResetSession.setOnClickListener {
+            respondCount = 0
+            binding.tvCount.text = respondCount.toString()
             binding.tvOutput.text = ""
             mChatbot.resetSession()
             setToEnded(false)
