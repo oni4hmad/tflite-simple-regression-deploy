@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
             if (chatStr.isNotEmpty()) {
                 mChatbot.chat(chatStr)
             } else {
-                binding.edtInput.error = "pilih/isi dulu kocak"
+                binding.edtInput.error = "pilih/isi dulu"
             }
         }
         binding.btnResetSession.setOnClickListener {
