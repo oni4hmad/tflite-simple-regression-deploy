@@ -24,16 +24,13 @@ class MainActivity : AppCompatActivity() {
         mChatbot.setOnChatbotResponded { respond, input, inputFormat ->
             when(input) {
                 Chatbot.Input.ENDED -> {
-                    showToast("ended! t: ${inputFormat.title.toString()} o: ${
-                        inputFormat.options?.joinToString().toString()} ")
+                    showOptions("ended!", inputFormat.title.toString(), inputFormat.options?.joinToString().toString())
                 }
                 Chatbot.Input.CHAT -> {
-                    showToast("chat! t: ${inputFormat.title.toString()} o: ${
-                        inputFormat.options?.joinToString().toString()} ")
+                    showOptions("ended!", inputFormat.title.toString(), inputFormat.options?.joinToString().toString())
                 }
                 Chatbot.Input.RADIO_BUTTON -> {
-                    showToast("radio button! t: ${inputFormat.title.toString()} o: ${
-                        inputFormat.options?.joinToString().toString()} ")
+                    showOptions("ended!", inputFormat.title.toString(), inputFormat.options?.joinToString().toString())
                 }
                 Chatbot.Input.CHECK_BOX -> {
                     showToast("check box! t: ${inputFormat.title.toString()} o: ${
@@ -51,6 +48,13 @@ class MainActivity : AppCompatActivity() {
             val chatStr = binding.edtInput.text.toString()
             mChatbot.chat(chatStr)
         }
+        binding.btnResetSession.setOnClickListener {
+            binding.tvOutput.text = ""
+            mChatbot.resetSession()
+        }
+    }
+
+    private fun showOptions(type: String, title: String, options: String) {
 
     }
 

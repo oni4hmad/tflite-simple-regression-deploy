@@ -2,6 +2,7 @@ package com.example.test_tflite_app_simple.chatbot
 
 import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -16,6 +17,8 @@ import java.nio.charset.Charset
 class Chatbot (private val context: Context) {
 
     private lateinit var tflite: Interpreter
+
+    private var isBotSessionEnded = false
 
     private val modelFIleName = "iswara_model.tflite"
     private val intentsFileName = "intents.json"
@@ -70,13 +73,16 @@ class Chatbot (private val context: Context) {
         }
         Log.d("predictionMap", predictionMap.toString())
 
-        predictionMap?.entries?.also { entries ->
+        if (!isBotSessionEnded) predictionMap?.entries?.also { entries ->
             for (classPrediction in entries) {
                 val isRemainingClassesEmpty = remainingIntentClasses.isEmpty()
                 val isExistInRemainingClasses = isExistInList(classPrediction.key, remainingIntentClasses)
                 val isThisEntryEndedClass = isExistInList(classPrediction.key, endIntentClasses)
 
                 if (isExistInRemainingClasses && !isThisEntryEndedClass) {
+
+                    showToast(classPrediction.key)
+
                     remainingIntentClasses.remove(classPrediction.key)
 
                     val botResponse = getBotResponseRandomize(classPrediction.key)
@@ -91,6 +97,9 @@ class Chatbot (private val context: Context) {
                     Log.d("predictionMap 1 top", "key=${classPrediction.key}, value=${classPrediction.value}")
                     break
                 } else if (isRemainingClassesEmpty && isThisEntryEndedClass) {
+
+                    showToast(classPrediction.key)
+
                     val botResponse = getBotResponseRandomize(classPrediction.key)
                     val userInput = getUserInput(classPrediction.key)
 
@@ -99,6 +108,8 @@ class Chatbot (private val context: Context) {
                         onChatbotResponded?.invoke(botResponse, inputType, userInput)
                         Log.d("predictionMap 2 input", "${inputType}, $userInput")
                     }
+
+                    isBotSessionEnded = true
 
                     Log.d("predictionMap 2 top", "key=${classPrediction.key}, value=${classPrediction.value}")
                     break
@@ -112,9 +123,10 @@ class Chatbot (private val context: Context) {
     }
 
     /*
-    * Reset remainig intents, so all bot responses can be called again
+    * Reset remaining intents, so all bot responses can be called again
     * */
     fun resetSession() {
+        isBotSessionEnded = false
         remainingIntentClasses.clear()
         classesList?.forEach {
             val isNotEndedClass = !isExistInList(it, endIntentClasses)
@@ -253,5 +265,9 @@ class Chatbot (private val context: Context) {
                 return map[type] ?: CHAT
             }
         }
+    }
+
+    private fun showToast(text: String) {
+        Toast.makeText(context,text, Toast.LENGTH_SHORT).show()
     }
 }
