@@ -24,17 +24,16 @@ class MainActivity : AppCompatActivity() {
         mChatbot.setOnChatbotResponded { respond, input, inputFormat ->
             when(input) {
                 Chatbot.Input.ENDED -> {
-                    showOptions("ended!", inputFormat.title.toString(), inputFormat.options?.joinToString().toString())
+                    showOptions("ended", inputFormat.title.toString(), inputFormat.options?.joinToString().toString())
                 }
                 Chatbot.Input.CHAT -> {
-                    showOptions("ended!", inputFormat.title.toString(), inputFormat.options?.joinToString().toString())
+                    showOptions("chat", inputFormat.title.toString(), inputFormat.options?.joinToString().toString())
                 }
                 Chatbot.Input.RADIO_BUTTON -> {
-                    showOptions("ended!", inputFormat.title.toString(), inputFormat.options?.joinToString().toString())
+                    showOptions("radio button", inputFormat.title.toString(), inputFormat.options?.joinToString().toString())
                 }
                 Chatbot.Input.CHECK_BOX -> {
-                    showToast("check box! t: ${inputFormat.title.toString()} o: ${
-                        inputFormat.options?.joinToString().toString()} ")
+                    showOptions("check box", inputFormat.title.toString(), inputFormat.options?.joinToString().toString())
                 }
             }
 
@@ -55,7 +54,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showOptions(type: String, title: String, options: String) {
-
+        binding.tvInput.text = """
+            [input]
+            type: ${type}
+            title: ${title}
+            options: ${options}
+        """.trimIndent()
     }
 
     private fun showToast(text: String) {
